@@ -54,6 +54,9 @@ jobs:
   - script: |
       env | sort -u
       conda create -y -n ${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
+    displayName: create conda env
+    script: |
+      source ~/mc/etc/profile.d/conda.sh
       conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
       conda list
       conda info
@@ -76,4 +79,4 @@ jobs:
           ip.parent._exec_file(f)"
       echo "$command"
       EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
-    displayName: create conda env, start caproto IOC and start IPython with startup files
+    displayName: start caproto IOC and start IPython with startup files
