@@ -53,7 +53,7 @@ jobs:
   # TravisCI: install
   - script: |
       env | sort -u
-      conda create -y -n ${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
+      conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
     displayName: create conda env
   - script: |
       source ~/mc/etc/profile.d/conda.sh
