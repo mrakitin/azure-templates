@@ -1,14 +1,15 @@
-variables:
-  MPLBACKEND: Qt5Agg
-  BS_PROFILE: collection
-  TEST_PROFILE: default
-  BS_ENV_VERSION: 2019C3.0.1
-  _CONDA_CHANNEL: nsls2forge
-  OPHYD_CONTROL_LAYER: pyepics
-
 jobs:
 - job: install_services
   displayName: Install services and needed apt-packages
+
+  variables:
+    MPLBACKEND: Qt5Agg
+    BS_PROFILE: collection
+    TEST_PROFILE: default
+    BS_ENV_VERSION: 2019C3.0.1
+    _CONDA_CHANNEL: nsls2forge
+    OPHYD_CONTROL_LAYER: pyepics
+
   steps:
   - script: git status
     displayName: check git status
