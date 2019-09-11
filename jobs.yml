@@ -44,10 +44,16 @@ jobs:
         PYTHON_VERSION: 3.7
 
   steps:
+
+  - script: env | sort -u
+    displayName: check the env
+    condition: succeeded()
+
   - script: |
       sudo apt-get install mongodb xvfb qtbase5-dev
     displayName: install required packages
     condition: succeeded()
+
   - script: |
       sudo systemctl start mongodb && sudo systemctl status mongodb
     displayName: start mongodb
@@ -85,7 +91,6 @@ jobs:
 
   # Create conda env:
   - script: |
-      env | sort -u
       conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${CONDA_CHANNEL_NAME} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
       conda env list
     displayName: create test conda env
