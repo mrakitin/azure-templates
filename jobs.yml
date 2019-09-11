@@ -25,6 +25,7 @@ jobs:
   - script: sudo apt-get install qtbase5-dev
     displayName: install qtbase5-dev
 
+  # TravisCI: before_install
   ##### Common steps #####
   - script: wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
     displayName: download miniconda
@@ -40,3 +41,47 @@ jobs:
   # Databroker config:
   - script: mkdir -v -p ~/.config/databroker/ && cp -v databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
     displayName: copy databroker config
+  - script: mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
+    displayName: create a profile dir
+  ##### Beamline-specific steps #####
+  - script: |
+      if [ -f .travis-local.sh ]; then
+          bash .travis-local.sh
+      fi
+    displayName: perform beamline-specific actions
+  
+  # TravisCI: install
+  - script: |
+      env | sort -u
+      conda create -y -n ${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
+      conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
+      conda list
+      conda info
+      conda env list
+      echo -e "\n" | caproto-spoof-beamline &
+      # Same reason as in https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15:
+      ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+    displayName: create conda env and start caproto IOC
+  
+  # TravisCI: script
+  - script: |
+    if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
+        connection_timeout='
+    import ophyd
+    import functools
+    ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=20)
+    print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)'
+    fi
+    command="${connection_timeout}
+    import glob
+    ip = get_ipython()
+    for f in sorted(glob.glob('startup/*.py')):
+        print(f'Executing {f} in TravisCI')
+        ip.parent._exec_file(f)"
+    displayName: construct the command for IPython
+
+  - script: echo "$command"
+    displayName: display the IPython command
+
+  - script: EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
+    displayName: start IPython with startup files
