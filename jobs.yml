@@ -1,9 +1,11 @@
 jobs:
-- job: Status
+- job: install services/apt-packages
+  displayName: Install services and needed apt-packages
   steps:
   - script: git status
+    displayName: check git status
   - script: sudo apt-get install mongodb
+    displayName: install mongodb
+  - script: sudo systemctl start mongodb && sudo systemctl status mongodb
+    displayName: start mongodb
 
-- job: ls
-  steps:
-  - script: ls -laF
