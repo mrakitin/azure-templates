@@ -1,6 +1,6 @@
 jobs:
 - job: run_profile_collection_testing
-  displayName: profile_collection:
+  displayName: "profile_collection:"
 
   variables:
     MPLBACKEND: Qt5Agg
