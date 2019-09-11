@@ -1,6 +1,6 @@
 jobs:
 - job: install_services
-  displayName: Install services and needed apt-packages
+  displayName: profile_collection testing
 
   variables:
     MPLBACKEND: Qt5Agg
@@ -13,36 +13,35 @@ jobs:
   steps:
   - script: git status
     displayName: check git status
-  - script: sudo apt-get install mongodb
-    displayName: install mongodb
-  - script: sudo systemctl start mongodb && sudo systemctl status mongodb
-    displayName: start mongodb
-  - script: sudo apt-get install xvfb
+  - script: |
+      sudo apt-get install mongodb
+      sudo systemctl start mongodb && sudo systemctl status mongodb
+    displayName: install & start mongodb
+  - script: |
+      sudo apt-get install xvfb
     displayName: install xvfb
-  # from https://developercommunity.visualstudio.com/content/problem/336288/headless-testing-using-xvfb-on-hosted-ubuntu-1604.html
-  - script: /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
-    displayName: start xvfb
   - script: sudo apt-get install qtbase5-dev
     displayName: install qtbase5-dev
 
   # TravisCI: before_install
   ##### Common steps #####
-  - script: wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-    displayName: download miniconda
-  - script: sh ./miniconda.sh -b -p ~/mc
-    displayName: install miniconda
-  - script: source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
-    displayName: source conda vars
-  - script: conda update conda --yes
-    displayName: update conda
-  # pyOlog config:
-  - script: cp -v pyOlog-test.conf ~/pyOlog.conf
-    displayName: copy pyOlog config
-  # Databroker config:
-  - script: mkdir -v -p ~/.config/databroker/ && cp -v databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
-    displayName: copy databroker config
+  - script: |
+      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      sh ./miniconda.sh -b -p ~/mc
+      source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
+      conda update conda --yes
+    displayName: download and install miniconda
+
+  # pyOlog and databroker configs:
+  - script: |
+      cp -v pyOlog-test.conf ~/pyOlog.conf
+      mkdir -v -p ~/.config/databroker/
+      cp -v databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
+    displayName: copy pyOlog and databroker configs
+
   - script: mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
     displayName: create a profile dir
+
   ##### Beamline-specific steps #####
   - script: |
       if [ -f .travis-local.sh ]; then
@@ -55,7 +54,13 @@ jobs:
       env | sort -u
       conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
     displayName: create conda env
+
   - script: |
+      # Start Xvfb
+      # (from https://developercommunity.visualstudio.com/content/problem/336288/headless-testing-using-xvfb-on-hosted-ubuntu-1604.html)
+      /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
+      export DISPLAY=:99
+
       source ~/mc/etc/profile.d/conda.sh
       conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
       conda list
