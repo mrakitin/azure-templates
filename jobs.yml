@@ -53,8 +53,8 @@ jobs:
     displayName: start mongodb
     condition: succeeded()
 
-  # TravisCI: before_install
-  ##### Common steps #####
+  # Common steps:
+
   - script: |
       wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       sh ./miniconda.sh -b -p ~/mc
@@ -75,6 +75,7 @@ jobs:
     condition: succeeded()
 
   # Beamline-specific step:
+
   - script: |
       if [ -f .travis-local.sh ]; then
           bash .travis-local.sh
@@ -115,7 +116,7 @@ jobs:
           connection_timeout='
       import ophyd
       import functools
-      ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=20)
+      # ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=20)
       print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)'
       fi
 
@@ -124,7 +125,7 @@ jobs:
       import glob
       ip = get_ipython()
       for f in sorted(glob.glob('startup/*.py')):
-          print(f'Executing {f} in TravisCI')
+          print(f'Executing {f} in CI')
           ip.parent._exec_file(f)"
 
       echo "$command"
