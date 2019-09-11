@@ -64,7 +64,7 @@ jobs:
     displayName: create conda env and start caproto IOC
   
   # TravisCI: script
-  - script: |
+  - bash: |
     if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
         connection_timeout='
     import ophyd
