@@ -1,3 +1,11 @@
+variables:
+  - MPLBACKEND: Qt5Agg
+  - BS_PROFILE: collection
+  - TEST_PROFILE: default
+  - BS_ENV_VERSION: 2019C3.0.1
+  - _CONDA_CHANNEL: nsls2forge
+  - OPHYD_CONTROL_LAYER: pyepics
+
 jobs:
 - job: install_services
   displayName: Install services and needed apt-packages
@@ -16,3 +24,18 @@ jobs:
   - script: sudo apt-get install qtbase5-dev
     displayName: install qtbase5-dev
 
+  ##### Common steps #####
+  - script: wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    displayName: download miniconda
+  - script: sh ./miniconda.sh -b -p ~/mc
+  - displayName: install miniconda
+  - script: source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
+  - displayName: source conda vars
+  - script: conda update conda --yes
+    displayName: update conda
+  # pyOlog config:
+  - script: cp -v pyOlog-test.conf ~/pyOlog.conf
+    displayName: copy pyOlog config
+  # Databroker config:
+  - script: mkdir -v -p ~/.config/databroker/ && cp -v databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
+    displayName: copy databroker config
