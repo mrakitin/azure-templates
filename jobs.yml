@@ -10,7 +10,9 @@ jobs:
     displayName: start mongodb
   - script: sudo apt-get install xvfb
     displayName: install xvfb
-  - script: sudo systemctl start xvfb && sudo systemctl status xvfb
+  - script: Xvfb :99 &
+    env:
+      DISPLAY: ":99"
     displayName: start xvfb
   - script: sudo apt-get install qtbase5-dev
     displayName: install qtbase5-dev
