@@ -2,6 +2,7 @@ jobs:
 - job: Status
   steps:
   - script: git status
+  - script: sudo apt-get install mongodb
 
 - job: ls
   steps:
