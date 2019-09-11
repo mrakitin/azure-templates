@@ -61,10 +61,6 @@ jobs:
       echo -e "\n" | caproto-spoof-beamline &
       # Same reason as in https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15:
       ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
-    displayName: create conda env and start caproto IOC
-  
-  # TravisCI: script
-  - script: |
       if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
           connection_timeout='
       import ophyd
@@ -78,10 +74,6 @@ jobs:
       for f in sorted(glob.glob('startup/*.py')):
           print(f'Executing {f} in TravisCI')
           ip.parent._exec_file(f)"
-    displayName: construct the command for IPython
-
-  - script: echo "$command"
-    displayName: display the IPython command
-
-  - script: EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
-    displayName: start IPython with startup files
+      echo "$command"
+      EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
+    displayName: create conda env, start caproto IOC and start IPython with startup files
