@@ -1,5 +1,5 @@
 jobs:
-- job: install services/apt-packages
+- job: install_services
   displayName: Install services and needed apt-packages
   steps:
   - script: git status
