@@ -1,0 +1,8 @@
+jobs:
+- job: Status
+  steps:
+  - script: git status
+
+- job: ls
+  steps:
+  - script: ls -laF
