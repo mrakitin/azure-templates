@@ -2,13 +2,27 @@ jobs:
 - job: install_services
   displayName: profile_collection testing
 
+  strategy:
+    matrix:
+      old_channel_pyepics:
+        _CONDA_CHANNEL: lightsource2-tag
+        OPHYD_CONTROL_LAYER: pyepics
+      new_channel_pyepics:
+        _CONDA_CHANNEL: nsls2forge
+        OPHYD_CONTROL_LAYER: pyepics
+      old_channel_caproto:
+        _CONDA_CHANNEL: lightsource2-tag
+        OPHYD_CONTROL_LAYER: caproto
+      new_channel_caproto:
+        _CONDA_CHANNEL: nsls2forge
+        OPHYD_CONTROL_LAYER: caproto
+
   variables:
     MPLBACKEND: Qt5Agg
-    BS_PROFILE: collection
     TEST_PROFILE: default
+    BS_PROFILE: collection
     BS_ENV_VERSION: 2019C3.0.1
-    _CONDA_CHANNEL: nsls2forge
-    OPHYD_CONTROL_LAYER: pyepics
+    PYTHON_VERSION: 3.7
 
   steps:
   - script: git status
@@ -52,7 +66,7 @@ jobs:
   # TravisCI: install
   - script: |
       env | sort -u
-      conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
+      conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
     displayName: create conda env
 
   - script: |
