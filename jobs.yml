@@ -1,10 +1,10 @@
 variables:
-  - MPLBACKEND: Qt5Agg
-  - BS_PROFILE: collection
-  - TEST_PROFILE: default
-  - BS_ENV_VERSION: 2019C3.0.1
-  - _CONDA_CHANNEL: nsls2forge
-  - OPHYD_CONTROL_LAYER: pyepics
+  MPLBACKEND: Qt5Agg
+  BS_PROFILE: collection
+  TEST_PROFILE: default
+  BS_ENV_VERSION: 2019C3.0.1
+  _CONDA_CHANNEL: nsls2forge
+  OPHYD_CONTROL_LAYER: pyepics
 
 jobs:
 - job: install_services
@@ -28,9 +28,9 @@ jobs:
   - script: wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
     displayName: download miniconda
   - script: sh ./miniconda.sh -b -p ~/mc
-  - displayName: install miniconda
+    displayName: install miniconda
   - script: source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
-  - displayName: source conda vars
+    displayName: source conda vars
   - script: conda update conda --yes
     displayName: update conda
   # pyOlog config:
