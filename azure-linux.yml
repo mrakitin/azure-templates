@@ -1,6 +1,6 @@
 jobs:
 - job: run_profile_collection_testing
-  displayName: "profile_collection (${{ parameters.bl_acronym }}):"
+  displayName: profile_collection (${{ parameters.bl_acronym }})
 
   variables:
     MPLBACKEND: Qt5Agg
